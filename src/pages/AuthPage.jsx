@@ -61,7 +61,7 @@ export default function AuthPage() {
               <Typography variant="body2">3. Publication et moderation de contenu</Typography>
             </Stack>
             <Alert severity="info" sx={{ mt: 3 }}>
-              Demo: `alice / pass123` et `bob / pass123`
+              Demo: `issiaka / pass123` et `hawa / pass123`
             </Alert>
           </Paper>
         </Grid>

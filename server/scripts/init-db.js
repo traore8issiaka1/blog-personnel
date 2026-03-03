@@ -32,19 +32,19 @@ async function main() {
     return rows[0].id;
   }
 
-  const aliceId = await ensureUser("issiaka traore", "alice", "pass123");
-  const bobId = await ensureUser("hawa traore", "bob", "pass123");
+  const issiakaId = await ensureUser("issiaka traore", "issiaka", "pass123");
+  const hawaId = await ensureUser("hawa traore", "hawa", "pass123");
 
   await query(
     `INSERT INTO friendships (user_id, friend_id)
      VALUES ($1, $2), ($2, $1)
      ON CONFLICT DO NOTHING`,
-    [aliceId, bobId]
+    [issiakaId, hawaId]
   );
 
   const { rows: articleRows } = await query(
     `SELECT id FROM articles WHERE author_id = $1 AND title = $2`,
-    [bobId, "Mon premier article public"]
+    [hawaId, "Mon premier article public"]
   );
 
   let articleId = articleRows[0]?.id;
@@ -54,7 +54,7 @@ async function main() {
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id`,
       [
-        bobId,
+        hawaId,
         "Mon premier article public",
         "Bienvenue sur ce mini blog React. Cet article est visible par mes amis.",
         true,
@@ -69,13 +69,13 @@ async function main() {
      FROM comments
      WHERE article_id = $1 AND author_id = $2 AND content = $3
      LIMIT 1`,
-    [articleId, aliceId, "Excellent debut."]
+    [articleId, issiakaId, "Excellent debut."]
   );
   if (commentExists.rows.length === 0) {
     await query(
       `INSERT INTO comments (article_id, author_id, content)
        VALUES ($1, $2, $3)`,
-      [articleId, aliceId, "Excellent debut."]
+      [articleId, issiakaId, "Excellent debut."]
     );
   }
 
