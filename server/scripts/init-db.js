@@ -16,7 +16,11 @@ async function main() {
   const byUsername = new Map(existing.map((user) => [user.username, user.id]));
 
   async function ensureUser(name, username, password) {
-    if (byUsername.has(username)) return byUsername.get(username);
+    if (byUsername.has(username)) {
+      const existingId = byUsername.get(username);
+      await query(`UPDATE users SET name = $1 WHERE id = $2`, [name, existingId]);
+      return existingId;
+    }
     const passwordHash = await bcrypt.hash(password, 10);
     const { rows } = await query(
       `INSERT INTO users (name, username, password_hash)
@@ -28,8 +32,8 @@ async function main() {
     return rows[0].id;
   }
 
-  const aliceId = await ensureUser("Alice Martin", "alice", "pass123");
-  const bobId = await ensureUser("Bob Diallo", "bob", "pass123");
+  const aliceId = await ensureUser("issiaka traore", "alice", "pass123");
+  const bobId = await ensureUser("hawa traore", "bob", "pass123");
 
   await query(
     `INSERT INTO friendships (user_id, friend_id)

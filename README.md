@@ -39,5 +39,5 @@ npm run dev
 - API: http://localhost:4000
 
 ## Comptes de demonstration
-- `alice / pass123`
-- `bob / pass123`
+- `alice / pass123` (nom: issiaka traore)
+- `bob / pass123` (nom: hawa traore)
