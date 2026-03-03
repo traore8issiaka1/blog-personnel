@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-start: #e9f1ff;
+  --bg-end: #f7fbff;
+  --ink: #102a43;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Poppins", "Helvetica Neue", Arial, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1300px 550px at 10% -10%, rgba(31, 75, 153, 0.14), transparent 60%),
+    radial-gradient(1000px 550px at 90% -25%, rgba(14, 165, 163, 0.12), transparent 58%),
+    linear-gradient(180deg, var(--bg-start), var(--bg-end));
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1rem 2rem;
+}
