@@ -12,16 +12,24 @@ async function main() {
   const schemaSql = await fs.readFile(schemaPath, "utf8");
   await query(schemaSql);
 
+  // Remove legacy demo accounts and all linked data via ON DELETE CASCADE.
+  await query(`DELETE FROM users WHERE username IN ('alice', 'bob')`);
+
   const { rows: existing } = await query("SELECT id, username FROM users");
   const byUsername = new Map(existing.map((user) => [user.username, user.id]));
 
   async function ensureUser(name, username, password) {
+    const passwordHash = await bcrypt.hash(password, 10);
     if (byUsername.has(username)) {
       const existingId = byUsername.get(username);
-      await query(`UPDATE users SET name = $1 WHERE id = $2`, [name, existingId]);
+      // Keep demo credentials deterministic on each init.
+      await query(`UPDATE users SET name = $1, password_hash = $2 WHERE id = $3`, [
+        name,
+        passwordHash,
+        existingId,
+      ]);
       return existingId;
     }
-    const passwordHash = await bcrypt.hash(password, 10);
     const { rows } = await query(
       `INSERT INTO users (name, username, password_hash)
        VALUES ($1, $2, $3)
