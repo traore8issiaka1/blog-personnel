@@ -230,17 +230,17 @@ app.post("/api/auth/login", async (req, res) => {
 
   try {
     const { rows } = await query(
-      `SELECT id, password_hash
+      `SELECT id, password_hash, username
        FROM users
-       WHERE username = $1
+       WHERE username = $1 OR LOWER(TRIM(name)) = $1
        LIMIT 1`,
       [safeUsername]
     );
     const user = rows[0];
-    if (!user) return res.status(401).json({ error: "Identifiants invalides." });
+    if (!user) return res.status(401).json({ error: "Utilisateur introuvable ou identifiants invalides." });
 
     const valid = await bcrypt.compare(safePassword, user.password_hash);
-    if (!valid) return res.status(401).json({ error: "Identifiants invalides." });
+    if (!valid) return res.status(401).json({ error: "Mot de passe incorrect." });
 
     const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: "7d" });
     return res.json({ token });
@@ -278,15 +278,14 @@ app.post("/api/friends/requests", requireAuth, async (req, res) => {
     const duplicate = await query(
       `SELECT 1
        FROM friend_requests
-       WHERE status = 'pending'
-         AND (
+       WHERE (
            (from_user_id = $1 AND to_user_id = $2)
            OR
            (from_user_id = $2 AND to_user_id = $1)
          )`,
       [me, targetUserId]
     );
-    if (duplicate.rows.length > 0) return res.status(400).json({ error: "Une demande existe deja." });
+    if (duplicate.rows.length > 0) return res.status(400).json({ error: "Une demande existe deja entre vous." });
 
     await query(
       `INSERT INTO friend_requests (from_user_id, to_user_id, status)
